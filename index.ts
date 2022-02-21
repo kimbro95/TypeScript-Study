@@ -1,60 +1,100 @@
 /*
-    타입스크립트 기본 타입 정리 ( primitive types )
+    타입을 미리 선언하기 애매할 때 ( Union type, any, unknown )
 
-    - 변수 생성시 타입 정하기
-    ex) let user : stirng = 'kim'
+    - Union type
+    ex) let user : string | number = 'kim';
+        let age : ( string | number ) = 28;
+    괄호를 쳐도되고 안쳐도된다.
+    값을 할당하는 순간 타입은 선언한 string 또는 number 중 하나로 변환된다.
 
-    - 타입의 종류
-    ex) let user : string = 'kim';
-        let age : number = 28;
-        let check : boolean = false;
-        let zero : null = null;
-        let area : undefined;
-    null, undefined 굳이 사용하진 않는다.
+    array, object 에서 Union type 사용할 때
+    let arr : ( number | string)[] = [ 1, '2', 3];
+    let obj : { data : ( number | string) } = { data : '123' }
+    ⭐⭐⭐
+    변수 정의된 Union 타입은 값을 할당과 동시에 OR 역할이 사라지지만
+    array 또는 object에 정의된 Union 타입은 OR 역할이 유지된다.
 
-    - array 또는 object 자료안에서 타입 정하기
-    array
-    ex) let members : string[] = ['kim', 'park']
-    변수명 다음 타입명[] 이렇게 지정하면된다.
-    여러개의 타입을 동시에 지정하고싶다면
-    변수명 : (string | number)[]
+    - any type
+    let user : any = 'kim';
+    user = 123;
+    user = false;
+    user = [];
+    아무 자료나 집어넣을 수 있는 타입이다.
 
-    object
-    ex) let myData : { age : number } = { age : 20}
+    ⭐ 타입관련 버그가 생길 경우 추적이 어렵다. => 타입스크립트를 쓸 이유가 없다.
+    특별한 경우를 제외하고는 쓰지않는것이 좋다.
 
-    ⭐⭐⭐타입스크립트 특징⭐⭐⭐
-    ⭐모든 변수에 타입을 지정하지 않아도된다.⭐
+    - unknown type
+    let user : any = 'kim';
+    user = 123;
+    user = false;
+    user = [];
+    any 와 똑같이 모든 타입을 집어 넣을 수 있다.
+    어떤 타입을 선언해야 할지 모른다면 any 보다는 unknown을 사용하자.
+    ⭐ 특징 ⭐
+    1. unknown 타입에는 모든 자료가 할당할 수 있다.
+    2. 자료를 할당해도 타입은 그대로 unknown 이다.
+
+    ex) let user : unknown;
+    let user1 : string = user;
+    let user2 : boolean = user;
+    let user3 : number = user;
+    unknown 타입을 다른 곳에 선언할 수 없다.
+    ⭐any는 선언할 수 있다.⭐
+
+    ex)let user: unknown;
+    user[0];
+    user - 1;
+    user.data;
+    타입스크립트는 정확한걸 좋아한다
+    숫자가 아닌걸 더하기 나 빼기 계산을 처리하지않는다.
+    계산은 number 류의 타입만할 수 있고
+    .data 이런건 object 류의 타입만 가능하다.
+
+    타입을 미리 선언하기 어려울 때 => unknown
+
+
+    1. 에러가 나는 이유?
+    ex) let age : string | number;
+        age + 1;
+    A. number 라는 명확한 타입을 지정해야한다. string | number 는 number 타입이 아니다.
+    ( uninon type은 새로운 타입이 만들어진 것 )
+
+    2. 에러가 나는 이유?
+    ex) let age : unknown = 1;
+        age + 1;
+    A. unknown은 number 타입이 아니다
+
+
+    Q1. 다음 변수 4개에 타입을 지정하기.
     ex) let user = 'kim';
-        let age = 28;
-    타입스크립트가 타입을 자동으로 부여해주기 때문이다
-    에러메세지는 tsc -w 명렁어가 실행중인 터미널에 출력된다.
+        let age = undefined;
+        let married = false; 
+        let 철수 = [user, age, married];
 
+    A.  let user : string = 'kim';
+        let age : undefined | number = undefined;
+        let married : boolean = false;
+        let james : ( string | number | undefined | boolean )[] = [ user, age, married ];
 
-    Q1. 여러분의 이름, 나이, 출생지역을 변수로 각각 저장해봅시다. 
-    A.  1-1. let myName : string = 'Kim Hyeong';
-        1-2. let myName = 'Kim Hyeong'; 
-
-        2-1. let myAge : number = 28;
-        2-2. let myAge : 28;
-
-        3-1. let myCountry : string = 'Seoul';
-        3-2. let myCountry = 'Seoul';
-
-    Q2. 여러분이 가장 좋아하는 곡과 가수이름을 변수에 object 자료형으로 담아보십시오.( 제목과 가수는 문자만 들어올 수 있어야합니다. )
-    A. let favorite : { title : string, singer : string } = { title : '희재', singer : '성시경' };
-
-    Q3. 다음과 같이 생긴 자료의 타입지정을 해보도록 합시다.
-    ex) let project = {
-            member : ['kim', 'park'],
-            days : 30,
-            started : true,
+    Q2. school 변수에 타입을 지정하기.
+    ex) let school = {
+            score : [100, 97, 84],
+            teacher : 'Phil',
+            friend : 'John'
         }
-    A. let project : { 
-        member : string[], days : number, started : boolean
-    } = {
-        member : ['kim', 'park'],
-        days : 30,
-        started : true,
-    }
+        school.score[4] = false;
+        school.friend = ['Lee' , school.teacher]
 
+    A.  let school : { 
+        score : (number : boolean)[],
+        teacher : string,
+        friend : string | string[]
+    } = {
+        score : [ 100, 97, 84 ],
+        teacher : 'Phil',
+        friend : John'
+    }
+    school.score[4] = false;
+    school.friend = ['lee', school.teacher]
 */
