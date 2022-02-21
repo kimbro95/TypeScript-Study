@@ -1,100 +1,86 @@
 /*
-    타입을 미리 선언하기 애매할 때 ( Union type, any, unknown )
+    함수에 타입을 지정하는 방법 & void 타입
 
-    - Union type
-    ex) let user : string | number = 'kim';
-        let age : ( string | number ) = 28;
-    괄호를 쳐도되고 안쳐도된다.
-    값을 할당하는 순간 타입은 선언한 string 또는 number 중 하나로 변환된다.
-
-    array, object 에서 Union type 사용할 때
-    let arr : ( number | string)[] = [ 1, '2', 3];
-    let obj : { data : ( number | string) } = { data : '123' }
-    ⭐⭐⭐
-    변수 정의된 Union 타입은 값을 할당과 동시에 OR 역할이 사라지지만
-    array 또는 object에 정의된 Union 타입은 OR 역할이 유지된다.
-
-    - any type
-    let user : any = 'kim';
-    user = 123;
-    user = false;
-    user = [];
-    아무 자료나 집어넣을 수 있는 타입이다.
-
-    ⭐ 타입관련 버그가 생길 경우 추적이 어렵다. => 타입스크립트를 쓸 이유가 없다.
-    특별한 경우를 제외하고는 쓰지않는것이 좋다.
-
-    - unknown type
-    let user : any = 'kim';
-    user = 123;
-    user = false;
-    user = [];
-    any 와 똑같이 모든 타입을 집어 넣을 수 있다.
-    어떤 타입을 선언해야 할지 모른다면 any 보다는 unknown을 사용하자.
-    ⭐ 특징 ⭐
-    1. unknown 타입에는 모든 자료가 할당할 수 있다.
-    2. 자료를 할당해도 타입은 그대로 unknown 이다.
-
-    ex) let user : unknown;
-    let user1 : string = user;
-    let user2 : boolean = user;
-    let user3 : number = user;
-    unknown 타입을 다른 곳에 선언할 수 없다.
-    ⭐any는 선언할 수 있다.⭐
-
-    ex)let user: unknown;
-    user[0];
-    user - 1;
-    user.data;
-    타입스크립트는 정확한걸 좋아한다
-    숫자가 아닌걸 더하기 나 빼기 계산을 처리하지않는다.
-    계산은 number 류의 타입만할 수 있고
-    .data 이런건 object 류의 타입만 가능하다.
-
-    타입을 미리 선언하기 어려울 때 => unknown
-
-
-    1. 에러가 나는 이유?
-    ex) let age : string | number;
-        age + 1;
-    A. number 라는 명확한 타입을 지정해야한다. string | number 는 number 타입이 아니다.
-    ( uninon type은 새로운 타입이 만들어진 것 )
-
-    2. 에러가 나는 이유?
-    ex) let age : unknown = 1;
-        age + 1;
-    A. unknown은 number 타입이 아니다
-
-
-    Q1. 다음 변수 4개에 타입을 지정하기.
-    ex) let user = 'kim';
-        let age = undefined;
-        let married = false; 
-        let 철수 = [user, age, married];
-
-    A.  let user : string = 'kim';
-        let age : undefined | number = undefined;
-        let married : boolean = false;
-        let james : ( string | number | undefined | boolean )[] = [ user, age, married ];
-
-    Q2. school 변수에 타입을 지정하기.
-    ex) let school = {
-            score : [100, 97, 84],
-            teacher : 'Phil',
-            friend : 'John'
-        }
-        school.score[4] = false;
-        school.friend = ['Lee' , school.teacher]
-
-    A.  let school : { 
-        score : (number : boolean)[],
-        teacher : string,
-        friend : string | string[]
-    } = {
-        score : [ 100, 97, 84 ],
-        teacher : 'Phil',
-        friend : John'
+    - 함수에는 타입을 2곳에 지정할 수 있다.
+    ex) function 함수( x : number ) : number {
+        return x * 2
     }
-    school.score[4] = false;
-    school.friend = ['lee', school.teacher]
+    함수에 들어오는 파라미터 타입지정은 파라미터 옆에서 지정한다.
+    함수가 실행되고 return 되는 값에 타입을 지정하려면 함수명() 옆에 지정한다.
+
+    - void 타입
+    ex) fucntion 함수( x : number ) : void {
+            return x * 2
+        }
+    void = 아무것도 없이 공험함을 뜻 함
+    return할 자료가 없는 함수의 타입
+    예시에 코드를 작성하면 return 문이 있는곳에 에러가 난다. => void 타입이기 때문에
+    함수가 return 되는것을 방지하고싶을때 활용하면된다.
+
+    - 파라미터가 옵션인 경우
+    ex) function 함수( x? : number){
+
+    }
+    함수();     // 가능
+    함수(2);    // 가능
+    파라미터 우측에 ? 값을 주면된다
+    물음표는 x : number | undefined 와 똑같은 의미이다.
+
+    Q1.예시 코드에 return문에 에러가 나는 이유는?
+    ex-1) function count( x: number | string ){
+            return x + 1
+        }
+    ex-2) function 내함수(x? :number) :number { 
+            return x * 2 
+        }  
+    A. 타입스크립트에서 변수의 타입이 number가 아닐경우에 연산을 하지않는다.
+    지금처럼 number | string 이 선언된 union type 일 경우 에러를 띄운다.
+
+    Q2.이름을 파라미터로 입력하면 콘솔창에 "안녕하세요 홍길동"을 출력하고
+    아무것도 파라미터로 입력하지 않고 함수를 사용하면 "이름이 없습니다" 를 출력하는 함수를 만들어봅시다.
+
+    A. function  myName(x? : string) : void{
+            if(x){
+                console.log(`안녕하세요 ${x}`)
+            } else {
+                console.log(`이름이 없습니다.`)
+            }
+        }
+
+    Q.3 함수에 숫자 또는 문자를 집어넣으면 자릿수를 세어 출력해주는 함수
+    ex) '245' 이런 문자를 입력하면 3이 return 되어야합니다.
+        숫자도 마찬가지로 9567 이런 숫자를 입력하면 4가 return 되어야합니다.
+        숫자 또는 문자 이외의 자료가 들어오면 안됩니다.
+    
+    A.  function 문자( x : number | string ){
+            if(typeof(x) === 'number'){
+                return x.toString().length;
+            } else {
+                return x.length;
+            }
+        }
+
+    Q4. 결혼 가능 확률 함수
+    1. 함수의 파라미터로 월소득(만원단위), 집보유여부(true/false), 매력점수 ('상' or '중' or '하') 를 입력할 수 있어야합니다. 
+    2. 월소득은 만원 당 1점, 집보유시 500점 & 미보유시 0점, 매력점수는 '상'일 때만 100점으로 계산
+    3. 총 점수가 600점 이상일 경우 '가능'을 return 해줘야합니다. 그 외엔 아무것도 return하지 않습니다.
+
+    ex) 결혼가능하냐(700, false, '중') 이렇게 사용할 경우 "결혼가능"을 return 해줍니다.
+        결혼가능하냐(100, false, '상') 이렇게 사용할 경우 아무것도 return되지 않습니다.
+
+    A.  function check( money : number, house : boolean, charm : string) : string : void {
+            let score : number = 0;
+            score +=;
+
+            if( house === true ){
+                score += 500
+            }
+            if( charm === '상' ){
+                score += 100
+            }
+            if( score >= 600 ){
+                return '가능'
+            }
+        }
+        console.log(check(300, false, '중'));
 */
