@@ -1,6 +1,5 @@
 /*
     타입스크립트 기본 타입 정리 ( primitive types )
-    TypeScript 셋팅 및 필수 문법
 
     - 변수 생성시 타입 정하기
     ex) let user : stirng = 'kim'
