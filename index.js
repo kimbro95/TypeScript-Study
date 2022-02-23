@@ -1,125 +1,145 @@
 /*
-    class 를 만들 때 타입지정하기
+    object 에 사용가능한 타입지정
 
-    - 필드값 타입지정
-    ex) class Person {
-            data : number = 0;
+    - object 에 쓸 수 있는 interface 문법
+    ex) interface Squeare {
+            color : string,
+            width : number,
         }
-        let kim = new Person();
-        kim.data = '1' // erroe
-        data = 0; 으로 두어도 자동으로 number 타입이 지정되긴 하지만
-        명시하고싶다면 data : number = 0; 으로 지정해주면된다.
+        let 네모 : Square = { color : 'whire', width : 200 }
+    object 에 타입을 미리 정의하고싶으면 type 말고 interface 라는 문법으로도 가능하다.
 
-    - constructor 타입 지정
-    ex) class Person {
-            constructor(){
-                this.name = 'kim';
-                this.age = 28;
+    - interface 의 장정은 extends 도 가능하다.
+    ex) interface Student {
+            name : string,
+        }
+        insterface Teacher {
+            name : string,
+            age : number,
+        }
+            ↓↓↓↓↓
+        interface Student {
+            name : string,
+        }
+        insterface Teacher extends Student {
+            age : number
+        }
+    Student interface 를 extends 해달라고 하면 Student 안에 속성이 복사해서 Teacher 에 넣어준다
+    그럼 Teacher 는 age, name의 속성을 가진다.
+
+    - type 과 interface 의 차이점
+        type 사용법
+        type Dog = {
+            name = string
+        }
+        type Cat = { age : number } & Dog
+        & 기호를 사용하여 object 두개를 합칠 수 있다.
+
+        interface 사용법
+        interface Dog {
+            name : string,
+        }
+        interface Cat extends Dog {
+            age : number,
+        }
+        extends 를 이용하여 합친다.
+
+        하지만 interface 도 아래 문법 처럼 type 의 & 기호를 이용하여 복사할 수 있다.
+        interface Student {
+            name : string,
+        }
+        interface Teacher {
+            age : number,
+        }
+        let Animal : Student & Teacher = { name : 'lee', age : 90}
+
+    - 중복선언
+    interface
+    ex) interface Animal{
+            name : string,
+        }
+        interface Animal{
+            age : number,
+        }
+    ⭐interface 경우에는 타입이름을 중복으로 선언이 가능하다.⭐
+
+    type
+    ex) type Animal{
+            name : string,
+        }
+        type Animal{
+            age : number,
+        }
+    ❌type의 경우 타입이름을 중복 시킬 수 없다.❌
+
+    - 속성 중복선언
+    interface
+    ex) interface Animal{
+            name : string,
+        }
+        interface Dog extends Animal{
+            name : number,
+        }
+    ❌타입이름은 중복이 가능하지만 속성은 불가능하다.❌
+
+    ex) interface Animal {
+            name :string
+        }
+        interface Dog {
+            name :number
+        }
+        let 변수 : Dog & Animal = { name : 'mozzi' }
+    ❌ & 연산자를 이용하여 합쳐도 에러가난다. ❌
+    ⭐ 하지만 name : string, name : number 여서 에러가 나는것 둘 다 name : string 이면 에러가 나지않고 하나로 합쳐준다.⭐
+
+
+    Q1. interface 이용하여 간단하게 타입을 만들어 보세요.
+    ex) let item = { brand : 'LG' , serialNumber : 1000, model : ['TV', 'Phone'] }
+
+    A.  interface info {
+            brand : string,
+            serialNumber : number,
+            model : string[],
+        }
+        let item : info = { brand : 'LG' , serialNumber : 1000, model : ['TV', 'Phone'] }
+
+    Q2. array 안에 object 여러개가 필요합니다
+        쇼핑몰 장바구니를 구현해보세요
+    ex) let 장바구니 = [ { product : '청소기', price : 7000 }, { product : '삼다수', price : 800 } ]
+
+    A.  interface Cart{
+            product : string,
+            price : number,
+        }
+        let 장바구니 : Cart[] =  [ { product : '청소기', price : 7000 }, { product : '삼다수', price : 800 } ]
+
+    Q3. 위에 만든 타입에 extends 하기
+        { product : '청소기', price : 7000, card : false }
+        위에 object에 맞게 interface 를 extends 하기
+
+    A.  interface Cart{
+            product : string,
+            price : number,
+        }
+        interface Cart2 extends Cart {
+            card : boolean,
+        }
+
+    Q4. object 안에 함수를 2개 넣기
+        1. 이 object 자료는 plus() 함수를 내부에 가지고 있으며 plus 함수는 파라미터 2개를 입력하면 더해서 return 해줍니다.
+        2. 이 object 자료는 minus() 함수를 내부에 가지고 있으며 minus 함수는 파라미터 2개를 입력하면 빼서 return 해줍니다.
+
+    A.  interface 함수 {
+            plus : ( a : number, b : number ) => number;
+            minus : ( a : number, b : number ) => number;
+        }
+
+        let obj : 함수 = {
+            plus( a, b ){
+                return a + b
+            },
+            minus ( a, b ){
+                return a - b
             }
         }
-    위의 코드는 자바스크립트에서는 문제가되지않는다.
-    타입스크립트 문법에 맞게 작성하려면 아래와 같이 작성해야한다.
-    ex) class Person {
-        name;
-        age;
-            constructor(){
-                this.name = 'kim';
-                this.age = 28;
-            }
-        }
-    타입스크립트에서는 필드 값으로 name, age가 미리 정의되어있어야 constructor 안에서 사용가능하다.
-
-    ex) class Person {
-        name;
-        age;
-            constructor(a){
-                this.name = a;
-                this.age = 28;
-            }
-        }
-    constructor 함수에는 변수를 집어넣을 수 있다.
-    사용시에 new Person('Hi')를 작성하면 'Hi'가 a 값에 들어간다.
-
-    Q1. 위 코드에서 constructor 함수의 타입을 지정해보세요.
-        name 속성에는 string만 들어올 수 있게 타입지정 해보십시오.
-    A.  class Person {
-        name;
-        age;
-            constructor( a : string ){
-                this.name = a;
-                this.age = 28;
-            }
-        }
-
-    - default parameter
-    ex) class Person{
-        name;
-        age;
-            constructor( a = 'kim', b = 28){
-                this.name = a;
-                this.age = b;
-            }
-        }
-    파라미터에 값을 입력을 안하면 자동으로 기본값을 지정해준다.
-    파라미터 = 값
-
-    ⭐constructor 함수는 return 타입을 지정하면 안된다.
-    ⭐constructor에 의해서 object로 자료가 만들어지기 때문이다.
-    필드값과 constructor는 같은 기능이다.
-    하지만 new Person() 사용할때 안에 파라미터로 값을 넣으려면 constructor를 만들어야한다.
-
-    - methods 타입지정
-    ex) class Person{
-            add( num : number ) : void {
-                console.log( num + 1 )
-            }
-        }
-    클래스 내부에 함수를 입력할 수 있다.
-    이 함수는 Person 클래스의 prototype 에 추가된다.
-
-    Q1. Car 클래스 만들기
-        1. { model : '소나타', price : 3000 } 이렇게 생긴 object를 복사해주는 class를 만들어보십시오.
-        2. 사된 object 자료들은 .tax() 라는 함수를 사용가능한데 현재 object에 저장된 price의 10분의1을 출력해주어야합니다.
-        3. model과 price 속성의 타입지정도 알아서 잘 해보십시오. tax() 함수의 return 타입도요.
-
-    A. class Car{
-        model : string;
-        price : number;
-            constructor(a : string, b : number){
-                this.model = a;
-                this.price = b;
-            }
-            tax() : number {
-                return this.price * 0.1;
-            }
-        }
-
-    Q2. class 인데 파라미터가 많이 들어간 class Word를 만들어 보세요.
-        1. object 만들 때 new Word() 소괄호 안에 숫자 혹은 문자를 입력하면
-        2. 숫자는 전부 object 안의  num 속성 안에 array 형태로 저장되고
-        3. 문자는 전부 object 안의 str 속성 안에 array 형태로 저장되는 class를 만들어봅시다.
-        4. class 만들 때 넣을 수 있는 숫자와 문자 갯수는 일단 제한은 없습니다.
-
-    A.  class Word{
-            num;
-            str;
-            constructor(...Param){
-
-                let nums : number[] = [];
-                let strs : string[] = [];
-
-                Param.forEach((val) => {
-                    if( typeof val === 'number' ){
-                        nums.push(val);
-                    } else {
-                        strs.push(val);
-                    }
-                })
-                this.num = nums;
-                this.str = strs;
-            }
-        }
-
-        let obj = new Word('kim', 28, 'moon', 30);
-        ⭐...Param : rest parameter ⭐
 */ 
