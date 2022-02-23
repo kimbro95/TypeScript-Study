@@ -1,93 +1,125 @@
 /*
-    타입스크립트로 HTML 변경과 조작할 때 주의점
+    class 를 만들 때 타입지정하기
 
-    - strictNullCheck 옵션
-    ex) {
-            "compilerOptions" : {
-                "target" : "ES5",
-                "module" : "commonjs",
-                "strictNullCheck" : true  
+    - 필드값 타입지정
+    ex) class Person {
+            data : number = 0;
+        }
+        let kim = new Person();
+        kim.data = '1' // erroe
+        data = 0; 으로 두어도 자동으로 number 타입이 지정되긴 하지만
+        명시하고싶다면 data : number = 0; 으로 지정해주면된다.
+
+    - constructor 타입 지정
+    ex) class Person {
+            constructor(){
+                this.name = 'kim';
+                this.age = 28;
             }
         }
-    tsconfig.json 파일에 strictNullCheck 옵션을 true 값으로 줄 경우
-    변수를 조작하기 이전에 null 값인지 아닌지 체크할 수 있다.
-
-    - HTML 찾고 변경하기
-    ex) let title = document.querySelector("#title");
-        title.innerHTML = "HI"
-
-        strict 옵션이 true 로 설정했기때문에 에러가 출력된다
-        에러의 원인은 셀렉터로 찾은 html 의 타입은 Element | null 두가지 타입의 union type 이기 때문이다.
-        ( 찾지 못 했을 경우에는 null )
-
-
-    - 해결을 위한 narrowing 방법
-    1. 기본적인 narrowing
-    let title = document.querySelector("#title");
-    if ( title !== null ){
-        title.innerHTML = 'Hi'
-    }
-
-    2. instanceof 를 이용한 narrowing
-    let title = document.querySelector("#title");
-    if( title instanceof Element ){
-        title.innerHTML = 'Hi'
-    }
-
-    3. assertion 을 이용한 narrowing
-    let title = document.querySelector("#title") as Element;
-    title.innerHTML = 'Hi'
-
-    4. optional chaining 연산자를 이용한 narrowing
-    let title = document.querySelector("#title");
-    if( title?.innerHTML !== undefined ){
-        title.innerHTML = 'Hi'
-    }
-
-    5. strictNullCheck 옵션을 false 로 설정하기
-
-    가장 좋은 해결책은 2번의 instanceof 를 이용한 narrowing 이다.
-    3번 또는 5번은 해결책이긴 하지만 그렇다면 타입스크립트를 쓰는 의미가 없다.
-
-
-    - a태그의 href 속성 바꾸기
-    ex) let link = document.querySelector(".link");
-        if( link instanceof HTMLAnchorElement ){
-            link.href = 'daum.net'
-        }
-    html 태그에는 종류별로 정확한 타입명칭이 있다
-        a 태그   - HTMLAnchorElement
-        img 태그 - HTMLImageElement
-        h4 태그  - HTMLHeadingElement
-        button 태그 - HTMLButtonElement
-    이렇게 태그별로 정확한 타입으로 narrowing을 해야한다.
-
-
-    - 이벤트리스너에서 narrowing
-    let button = document.getElementById('#button');
-    button?.addEventListener('click', function(){
-        console.log('hi');
-    });
-    optional chaining 문법을 이용한 narrowing
-
-    Q1. 이미지를 바꿔보세요.
-    이미지를 new.jpg 로 변경해보세요
-    ex) <img id="image" src="img.jpg" />
-
-    A.  let imgSrc = document.querySelector("#image");
-        if( imgSrc instanceof HTMLImageElement){
-            imgSrc.src = 'new.jpg';
-        }
-
-    Q2. 여러개의 html요소 바꾸기
-    ex) <a class="naver" href="naver.com">링크</a>
-        <a class="naver" href="naver.com">링크</a>
-        <a class="naver" href="naver.com">링크</a> 
-
-    A.  let link = document.querySelectorAll('.naver');
-        link.forEach((val) => {
-            if( val instanceof HTMLAnchorElement ){
-                val.href = 'daum.net'
+    위의 코드는 자바스크립트에서는 문제가되지않는다.
+    타입스크립트 문법에 맞게 작성하려면 아래와 같이 작성해야한다.
+    ex) class Person {
+        name;
+        age;
+            constructor(){
+                this.name = 'kim';
+                this.age = 28;
             }
-        })
+        }
+    타입스크립트에서는 필드 값으로 name, age가 미리 정의되어있어야 constructor 안에서 사용가능하다.
+
+    ex) class Person {
+        name;
+        age;
+            constructor(a){
+                this.name = a;
+                this.age = 28;
+            }
+        }
+    constructor 함수에는 변수를 집어넣을 수 있다.
+    사용시에 new Person('Hi')를 작성하면 'Hi'가 a 값에 들어간다.
+
+    Q1. 위 코드에서 constructor 함수의 타입을 지정해보세요.
+        name 속성에는 string만 들어올 수 있게 타입지정 해보십시오. 
+    A.  class Person {
+        name;
+        age;
+            constructor( a : string ){
+                this.name = a;
+                this.age = 28;
+            }
+        }
+
+    - default parameter
+    ex) class Person{
+        name;
+        age;
+            constructor( a = 'kim', b = 28){
+                this.name = a;
+                this.age = b;
+            }
+        }
+    파라미터에 값을 입력을 안하면 자동으로 기본값을 지정해준다.
+    파라미터 = 값
+
+    ⭐constructor 함수는 return 타입을 지정하면 안된다. 
+    ⭐constructor에 의해서 object로 자료가 만들어지기 때문이다.
+    필드값과 constructor는 같은 기능이다.
+    하지만 new Person() 사용할때 안에 파라미터로 값을 넣으려면 constructor를 만들어야한다.
+
+    - methods 타입지정
+    ex) class Person{
+            add( num : number ) : void {
+                console.log( num + 1 )
+            }
+        }
+    클래스 내부에 함수를 입력할 수 있다.
+    이 함수는 Person 클래스의 prototype 에 추가된다.
+
+    Q1. Car 클래스 만들기
+        1. { model : '소나타', price : 3000 } 이렇게 생긴 object를 복사해주는 class를 만들어보십시오.
+        2. 사된 object 자료들은 .tax() 라는 함수를 사용가능한데 현재 object에 저장된 price의 10분의1을 출력해주어야합니다. 
+        3. model과 price 속성의 타입지정도 알아서 잘 해보십시오. tax() 함수의 return 타입도요. 
+
+    A. class Car{
+        model : string;
+        price : number;
+            constructor(a : string, b : number){
+                this.model = a;
+                this.price = b;
+            }
+            tax() : number {
+                return this.price * 0.1;
+            }
+        }
+
+    Q2. class 인데 파라미터가 많이 들어간 class Word를 만들어 보세요.
+        1. object 만들 때 new Word() 소괄호 안에 숫자 혹은 문자를 입력하면 
+        2. 숫자는 전부 object 안의  num 속성 안에 array 형태로 저장되고 
+        3. 문자는 전부 object 안의 str 속성 안에 array 형태로 저장되는 class를 만들어봅시다.
+        4. class 만들 때 넣을 수 있는 숫자와 문자 갯수는 일단 제한은 없습니다.
+
+    A.  class Word{
+            num;
+            str;
+            constructor(...Param){
+
+                let nums : number[] = [];
+                let strs : string[] = [];
+
+                Param.forEach((val) => {
+                    if( typeof val === 'number' ){
+                        nums.push(val);
+                    } else {
+                        strs.push(val);
+                    }
+                })
+                this.num = nums;
+                this.str = strs;
+            }
+        }
+
+        let obj = new Word('kim', 28, 'moon', 30);
+        ⭐...Param : rest parameter ⭐
 */
