@@ -1,51 +1,74 @@
 /*
-    함수에서 사용하는 never 타입
+    public, private
 
-    - never type이란?
-    ex) function 함수() : never{
+    - public 키워드
+    ex) class User{
+            public name : string;
 
-    }
-    조건1 - 함수가 절대 return 하지않아야하고
-    조건2 - 함수가 실행이 끝나지 않아야한다.
-    End Point가 없을 경우 그런 함수에 붙이는 타입이다.
-    모든 자바스크립트 함수에는 return undefined 가 숨겨져있다.
-
-    - 사용되는 경우
-    ex) fucntion 함수() : never{
-            while( true ){
-                console.log(1)'
+            constructor(){
+                this.name = 'kim';
             }
         }
-    무한히 실행되어 End Point가 없어서
+        let 유저 = new User();
+    public이 붙은 속성은 자식 object들이 마음대로 사용하고 수정이 가능하다.
+    하지만 기본값이기에 public은 생략가능
+
+    - private 키워드
+    ex) class User{
+            public name : string;
+            private familyName : string;
+
+            constructor(){
+                this.name = 'kim';
+            }
+        }
+        let 유저 = new User();
+        유저.name       // success
+        유저.familyName // error
+    private 키워드가 붙으면 오직 class{} 안에서만 수정 및 사용이 가능하다.
+    이렇게 부모에서만 사용하고 외부 자식에게 숨기고 싶을 때는 private를 사용하면된다.
+
+    Q1. private 부여된 속성을 class 밖에서 수정해야할 경우?
+        1. private 속성을 수정하는 함수를 class 안에 만들고 실행시키면된다.
     
-    ex) function 함수() : never{
-            throw new Erroe('erroe')
-        }
-    에러가 나면 코드실행이 중단되기 때문에
-    never를 사용할 수 있다.
+    A.
+    ex) class User{
+            public name : string;
+            private familyName : string;
 
-    ⭐무언가 return 하지않고싶을 경우에는 void를 쓰자⭐
-    never 타입을 사용할 일은 거의 없다.
-    하지만 코드가 이상하게 짜다보면 자동으로 등장해서
-    코드에 문제를 발견 할 수 있다.
-
-    ex) function 함수(val : string){
-            if(typeof val === 'string'){
-                val = 'Hi';
-            } else {
-                val = 'else';
+            constructor(){
+                this.name = 'bro';
+                this.familyName  = 'kim';
+            }
+            변경함수(){
+                this.familyName = 'lee';
             }
         }
-    이 경우에 else문이 실행될 경우는 없다 이럴경우 타입이 자동으로 never로 변환된다.
-    이런 건 있을 수 없다, 일어나면 안된다고 알려주는 느낌이라 생각하자.
+        let 유저 = new User();
+        console.log(유저) // { name : 'bro' , familyName : 'kim'}
+        유저.변경함수();
+        console.log(유저) // { name : 'bro' , familyName : 'lee'}
 
-    ex) function 함수(){
-            throw new Error()
-        }
+    ⭐private 용도
+    외부에서 실수로 수정하거나 값이 변경되면 안되는 경우
+    그리고 함수에서 수정해야하니 약간의 안전장치를 더해서 개발이 가능하다.
+    개발은 귀찮지만 버그를 예방한다.
 
-        let 함수2 = function (){
-            throw new Error()
+    - public 키워드 팁
+    ex) class Person {
+            name;
+            constructor ( name : string ){
+                this.name = name;
+            }
         }
-        함수 선언문에 return이 없으면 void로 자동 타입 할당
-        함수 표현식에 return이 없으면 never로 자동 타입 할당
+        let 사람 = new Person('lee')
+
+                ↓↓↓↓↓
+
+        class Person{
+            constructor( public name : string ){
+            }
+        }
+        let 사람 = new Person('kim');
+    constructor 파라미테어 public을 붙이면 this.name = name 부분을 생략할 수 있다.
 */ 
