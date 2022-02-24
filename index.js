@@ -1,61 +1,51 @@
 /*
-    다양한 Narrowing 방법
+    함수에서 사용하는 never 타입
 
-    - null & undefined 체크
-    ex) if(변수 && typeof val === 'sting'){}
-        && 연산자를 이용한다
+    - never type이란?
+    ex) function 함수() : never{
 
-    && 연산자란?
-    조건식이 모두 참이면 true 로 판정해주는 논리연산자이다
-    하지만 여러개를 사용하면 다르다
-    && 기호를 비교할 때 true 와 false 를 넣는게 아니라 자료형을 넣으면
-    && 사이에 처음등장하는 falsy 값을 찾아주고 그게 아니면 마지막 값을 남긴다.
-    falsy 값은 false와 유사한 기능을 하는 null, undefined, NaN 이런 값들을 의미한다.
-    ex) 1 && null && 3 // null
-        undefined && 'Hi' && 100 // undefined
-    그래서
-    if(변수 && typeof val === 'sting'){}
-    이렇게 사용하면 변수가 undefined 라면 undefined 가 남아서 if문이 실행되지않는다.
-    if문 안에 falsy 값을 남기면 if가 실행되지않음
+    }
+    조건1 - 함수가 절대 return 하지않아야하고
+    조건2 - 함수가 실행이 끝나지 않아야한다.
+    End Point가 없을 경우 그런 함수에 붙이는 타입이다.
+    모든 자바스크립트 함수에는 return undefined 가 숨겨져있다.
 
-    - in 연산자로 object 자료 narrowing
-    ex) type Fish = { swim : string };
-        type Bird = { fly : sting };
-
-        function 함수( animal : Fish | Bird ){
-            if ('swim' in animal){
-                return animal.swim
+    - 사용되는 경우
+    ex) fucntion 함수() : never{
+            while( true ){
+                console.log(1)'
             }
-            return anima.fly
         }
-    if (키값 in object자료형)
-    Fish 와 Bird 처럼 처럼 다른 유니크한 속성이 있다면 저 키값을 통해 in 을 사용할 수 있다.
+    무한히 실행되어 End Point가 없어서
+    
+    ex) function 함수() : never{
+            throw new Erroe('erroe')
+        }
+    에러가 나면 코드실행이 중단되기 때문에
+    never를 사용할 수 있다.
 
-    - class로부터 생산된 object라면 instanceof로 narrowing
-    ex) let 날짜 = new Date();
-        if(날짜 instanceof Date){
-            console.log(true);
-        }
-    object들은 instanceof 키워드를 이용하여 부모클래스를 확인할 수 있다.
+    ⭐무언가 return 하지않고싶을 경우에는 void를 쓰자⭐
+    never 타입을 사용할 일은 거의 없다.
+    하지만 코드가 이상하게 짜다보면 자동으로 등장해서
+    코드에 문제를 발견 할 수 있다.
 
-    - literal type을 이용한 narrowing
-    ex) type Cat = {
-            wheel : 4,
-            color : string
-        }
-        type Bike = {
-            wheel : 2,
-            color : string
-        }
-        function 함수(x : Car | Bike ){
-            if(x.wheel === 4){
-                console.log('Car')
+    ex) function 함수(val : string){
+            if(typeof val === 'string'){
+                val = 'Hi';
             } else {
-                console.log('Bike')
+                val = 'else';
             }
         }
-    typeof연산자는 string, number, object 같은 타입만 구분해준다.
-    위에 경우일 경우 literal type wheel을 만들어 값이 서로 다르게 고유의 값을 줘서 구분 할 수 있다.
+    이 경우에 else문이 실행될 경우는 없다 이럴경우 타입이 자동으로 never로 변환된다.
+    이런 건 있을 수 없다, 일어나면 안된다고 알려주는 느낌이라 생각하자.
 
+    ex) function 함수(){
+            throw new Error()
+        }
 
-*/
+        let 함수2 = function (){
+            throw new Error()
+        }
+        함수 선언문에 return이 없으면 void로 자동 타입 할당
+        함수 표현식에 return이 없으면 never로 자동 타입 할당
+*/ 
