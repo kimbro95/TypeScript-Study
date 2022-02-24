@@ -1,145 +1,81 @@
 /*
-    object 에 사용가능한 타입지정
+    rest parameter, destructuring 타입지정
 
-    - object 에 쓸 수 있는 interface 문법
-    ex) interface Squeare {
-            color : string,
-            width : number,
+    - rest parameter란?
+    ex) function 함수(...val){
+            console.log(val) // [1,2,3,4,5]
         }
-        let 네모 : Square = { color : 'whire', width : 200 }
-    object 에 타입을 미리 정의하고싶으면 type 말고 interface 라는 문법으로도 가능하다.
+        함수(1,2,3,4,5)
+    함수 파라미터 앞에 점 3개를 붙여주면 파라미터를 여러개 선언하면 다 불러올 수 있다.
+    다른 일반 파라미터 뒤에만 올 수 있다.
+    집어넣은 값들은 전부 arry [] 안에 담겨진다.
 
-    - interface 의 장정은 extends 도 가능하다.
-    ex) interface Student {
-            name : string,
+    - rest parameter 타입지정
+    ex) function 함수(...val : number[]){
+            console.log(val)
         }
-        insterface Teacher {
-            name : string,
-            age : number,
-        }
-            ↓↓↓↓↓
-        interface Student {
-            name : string,
-        }    
-        insterface Teacher extends Student {
-            age : number
-        }
-    Student interface 를 extends 해달라고 하면 Student 안에 속성이 복사해서 Teacher 에 넣어준다
-    그럼 Teacher 는 age, name의 속성을 가진다.
+    rest parameter는 [] 안에 담겨오기 때문에 array 형태로 타입을 지정해야한다.
 
-    - type 과 interface 의 차이점
-        type 사용법
-        type Dog = {
-            name = string
-        }
-        type Cat = { age : number } & Dog
-        & 기호를 사용하여 object 두개를 합칠 수 있다.
+    ex) let arr = [4,5]
+        let arr2 = [1,2,3, ...arr]
+        console.log(arr2) // [1,2,3,4,5]
+    array 혹은 object 왼쪽에 rest parameter를 붙이면 []가 사라진다.
 
-        interface 사용법
-        interface Dog {
-            name : string,
-        }
-        interface Cat extends Dog {
-            age : number,
-        }
-        extends 를 이용하여 합친다.
+    - Destructuring이란?
+    ex) let { name, age } = { name : 'kim', age : 28 }
+        let [ age, name ] = [ 'kim', 28 ]
+    array나 object 에서 왼쪽 오른쪽 동일하게 변수를 작명하면 변수를 쉽게 사용할 수 있다.
+    let Person = { name : 'kim', age : 28 }
+    Person.name 처럼 사용하지않고
+    let { name, age } = { name : 'kim', age : 28 }
+    이렇게 선언하면 name을 가져오면된다.
 
-        하지만 interface 도 아래 문법 처럼 type 의 & 기호를 이용하여 복사할 수 있다.
-        interface Student {
-            name : string,
+    - 함수에서 사용하는 Destructuring
+    ex) function 함수({ student, age }){
+            console.log(student, age);
         }
-        interface Teacher {
-            age : number,
+        함수({student : true , age : 30 })
+
+    Q1. 위의 함수 파라미터에 타입을 지정해보세요.
+    A.  function 함수({ student, age } : { student : string, age : number }){
+            console.log(student, age);
         }
-        let Animal : Student & Teacher = { name : 'lee', age : 90}
+        함수({student : true , age : 30 })
 
-    - 중복선언
-    interface
-    ex) interface Animal{
-            name : string,
+    Q2. 숫자 여러개를 입력하면 최댓값을 return 해주는 함수를 만들어보자.
+        최댓값(6,3,7,2) 이렇게 쓰면 7이 return 되어야합니다. 
+        (조건1) 넣을 수 있는 숫자 갯수는 제한없음, 0 이상의 정수만 가능합니다.
+        (조건2) Math.max() 사용금지 반복문이나 쓰셈
+
+    A. function 함수(...num : number[]) : number {
+            let max : number = 0;
+            num.forEach((a) => {
+                if( a > max) {
+                    max = a;
+                }
+            })
+            return max;
         }
-        interface Animal{
-            age : number,
+        console.log(함수(6,3,7,2));
+
+    Q2. 아래 object 자료를 파라미터로 입력할 수 있는 함수로 만들어보자.
+        (조건1) 오늘 배운 파라미터 destructuring 문법을 써봅시다.
+        (조건2) 함수실행시 입력한 파라미터의 value들 (kim, [3,5,4] 이런거)을 전부 콘솔창에 출력해줘야합니다.
+
+    A. function 함수({ user, comment, admin} : { user : string, comment : number[], admin : boolean}) : void{
+            console.log(user, comment, admin);
         }
-    ⭐interface 경우에는 타입이름을 중복으로 선언이 가능하다.⭐
+        함수( { user : 'kim', comment : [3,5,4], admin : false } )
+    A-2 함수의 파라미터들이 많을 경우 type 으로 변수에 담아된다.
 
-    type
-    ex) type Animal{
-            name : string,
+    Q3. 아래 array 자료를 파라미터로 입력할 수 있도록 함수를 만들어보자.
+        함수( [40, 'wine', false] )
+        (조건1) 오늘 배운 파라미터 destructuring 문법을 써봅시다.
+        (조건2) 함수실행시 입력한 파라미터들을 전부 콘솔창에 출력해줘야합니다.
+
+    A.  type 여러타입 = ( number | string | boolean )[];
+        function 함수([ a, b, c ] : 여러타입):void{
+            console.log(a,b,c)
         }
-        type Animal{
-            age : number,
-        }
-    ❌type의 경우 타입이름을 중복 시킬 수 없다.❌
-
-    - 속성 중복선언
-    interface
-    ex) interface Animal{
-            name : string,
-        }
-        interface Dog extends Animal{
-            name : number,
-        }
-    ❌타입이름은 중복이 가능하지만 속성은 불가능하다.❌
-
-    ex) interface Animal { 
-            name :string 
-        } 
-        interface Dog { 
-            name :number
-        } 
-        let 변수 : Dog & Animal = { name : 'mozzi' }
-    ❌ & 연산자를 이용하여 합쳐도 에러가난다. ❌
-    ⭐ 하지만 name : string, name : number 여서 에러가 나는것 둘 다 name : string 이면 에러가 나지않고 하나로 합쳐준다.⭐
-
-
-    Q1. interface 이용하여 간단하게 타입을 만들어 보세요.
-    ex) let item = { brand : 'LG' , serialNumber : 1000, model : ['TV', 'Phone'] }
-
-    A.  interface info {
-            brand : string,
-            serialNumber : number,
-            model : string[],
-        }
-        let item : info = { brand : 'LG' , serialNumber : 1000, model : ['TV', 'Phone'] }
-
-    Q2. array 안에 object 여러개가 필요합니다
-        쇼핑몰 장바구니를 구현해보세요
-    ex) let 장바구니 = [ { product : '청소기', price : 7000 }, { product : '삼다수', price : 800 } ]
-
-    A.  interface Cart{
-            product : string,
-            price : number,
-        }
-        let 장바구니 : Cart[] =  [ { product : '청소기', price : 7000 }, { product : '삼다수', price : 800 } ]
-
-    Q3. 위에 만든 타입에 extends 하기
-        { product : '청소기', price : 7000, card : false }
-        위에 object에 맞게 interface 를 extends 하기
-
-    A.  interface Cart{
-            product : string,
-            price : number,
-        }
-        interface Cart2 extends Cart {
-            card : boolean,
-        }
-
-    Q4. object 안에 함수를 2개 넣기
-        1. 이 object 자료는 plus() 함수를 내부에 가지고 있으며 plus 함수는 파라미터 2개를 입력하면 더해서 return 해줍니다. 
-        2. 이 object 자료는 minus() 함수를 내부에 가지고 있으며 minus 함수는 파라미터 2개를 입력하면 빼서 return 해줍니다. 
-
-    A.  interface 함수 {
-            plus : ( a : number, b : number ) => number;
-            minus : ( a : number, b : number ) => number;
-        }
-
-        let obj : 함수 = {
-            plus( a, b ){
-                return a + b
-            },
-            minus ( a, b ){
-                return a - b
-            }
-        }
+        함수( [40, 'wine', false] )
 */
