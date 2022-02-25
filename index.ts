@@ -133,4 +133,4 @@
         }
         let a = new Person<string>('어쩌구');
         a.name  // string 타입
-*/
+*/ 
